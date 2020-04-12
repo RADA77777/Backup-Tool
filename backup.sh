@@ -15,7 +15,7 @@ then
 fi
 
 
-# Checking if dir exists
+# Checking if dir specified by user exists
 if [ ! -d "${folder_to_copy}" ]
 then
 	echo "This directory doesn't exist! Please, go back and enter a valid directory"
@@ -23,36 +23,62 @@ then
 fi
 
 
+# Checking if there is a index file
+if [ ! -f "$HOME/Desktop/Backup-Tool/index.db" ]
+then
+	echo "ACHOU!"
+	touch "$HOME/Desktop/Backup-Tool/index.db"
+	index_value=$(grep --quiet "${folder_to_copy}" "$HOME/Desktop/Backup-Tool/index.db")
+else
+	index_value=""
+fi
+
 
 # The name for the compressed backup file will be generated based on the number of 
-# occurences of "/" in the path, so we need to remove the last one to make a good path
-if [ "${folder_to_copy: -1}" = "/" ]
+# files already present in index.db
+
+#TODO NAO PODE SER ZERO, TEM QUE SER O ULTIMO DE TODOS !!
+if [ "${index_value}" != "" ]
 then
-	name_file=${folder_to_copy::-1}
+	index_value=$(echo "${index_value}" | cut -d " " -f 1)
 else
-	name_file=${folder_to_copy}
+	index_value=0
 fi
+
+
+# Assingning name to file and creating an entry for it on the index file
+name_file="N${index_value}"
+echo $name_file
+echo "${index_value} ${folder_to_copy}" >> "$HOME/Desktop/Backup-Tool/index.db"
+
+
+#if [ "${folder_to_copy: -1}" = "/" ]
+#then
+#	name_file=${folder_to_copy::-1}
+#else
+#	name_file=${folder_to_copy}
+#fi
 
 
 
 # This looks ugly, but this is where the name of the file is generated.
 # If there are more than 4 instances of "/", the name is cut down until the last 4.
 # Changing this name generator is a good idea for a future improvement
-num_occurences=$(echo ${name_file} | awk '{print gsub(/\//, "")}')
-if [ ${num_occurences} -gt 4 ]
-then
-	name_file=$(echo ${name_file} | cut -d "/" -f $(expr ${num_occurences} - 2)-)
-fi
+#num_occurences=$(echo ${name_file} | awk '{print gsub(/\//, "")}')
+#if [ ${num_occurences} -gt 4 ]
+#then
+#	name_file=$(echo ${name_file} | cut -d "/" -f $(expr ${num_occurences} - 2)-)
+#fi
 
 
 
 # Here we change all occurences of "/" to "-", and then remove the first character 
 # if it is a "-"
-name_file=${name_file//\//-}
-if [ $(echo ${name_file} | cut -c 1) = "-" ]
-then
-	name_file=${name_file:1}
-fi
+#name_file=${name_file//\//-}
+#if [ $(echo ${name_file} | cut -c 1) = "-" ]
+#then
+#	name_file=${name_file:1}
+#fi
 
 
 
