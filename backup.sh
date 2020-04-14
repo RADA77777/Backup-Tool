@@ -6,6 +6,22 @@
 
 folder_to_copy=$1
 
+echo -e "\nStarting backup tool for ${folder_to_copy}...\n\n"
+sleep 3
+
+# Clear cache folder
+if [ -d $HOME/.cache ]
+then
+	echo -e "Do you want to clear your personal cache? [y/n]\n"
+	read answer
+
+	if [ "${answer}" = "y" ]
+	then
+		rm -r $HOME/.cache
+		echo -e "Cache removed\n"		
+	fi
+fi
+
 # If path inserted doesnt start with "/", it means the user used a relative path, so we replace it with 
 # an absolute path, starting at root
 if [ $(echo ${1} | cut -c 1) != "/" ]
@@ -49,20 +65,6 @@ name_file="N${index_value}"
 echo "${index_value} ${folder_to_copy}" >> "$HOME/Backups/index.db"
 
 
-
-#################################################
-##                                             ##
-##        Starting Backup tool script          ##
-##                                             ##
-#################################################
-
-
-
-
-echo -e "\nStarting backup tool for ${folder_to_copy}...\n\n"
-sleep 3
-
-
 # If a backup folder doesn't exist, create it
 if [ ! -d "${HOME}/Backups" ]
 then
@@ -76,6 +78,13 @@ cd $HOME/Backups
 # Creating temporary folder, to not make a mess on the $HOME/Backups folder
 mkdir tmp
 temp_folder="$HOME/Backups/tmp/"
+
+#################################################
+##                                             ##
+##        Starting Backup tool script          ##
+##                                             ##
+#################################################
+
 
 
 # Checking if a previous backup of this folder already exists
