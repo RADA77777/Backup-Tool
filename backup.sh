@@ -37,7 +37,6 @@ fi
 # files already present in index.db
 if [ "${index_value}" = "" ]
 then
-	echo "Nao existe procurado"
 	index_value=$(tail -n1 $HOME/Backups/index.db | cut -d " " -f 1)
 else
 	index_value=$(echo "${index_value}" | cut -d " " -f 1)
